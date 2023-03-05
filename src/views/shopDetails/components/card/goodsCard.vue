@@ -1,12 +1,12 @@
 <template>
   <div>
     <van-row @click="todetails" class="goodsCard">
-      <van-col span="9" style="margin-right:3%"><img src="@/assets/logo.png" alt="noPic" /> </van-col>
+      <van-col span="9" style="margin-right:3%"><img src="@/assets/shop/shop-list.png" alt="noPic" style="width: 100px;height: 120px;object-fit: cover;border-radius: 10px;" /> </van-col>
       <van-col span="14">
-        <div class="mgb-4" style="font-size: 21px;font-weight: 800;">{{ dataSave.goodsName }}</div>
+        <div class="mgb-4" style="font-size: 17px;font-weight: 800;">{{ dataSave.goodsName }}</div>
         <div class="mgb-4 flex">
           <div class="goodsCard_Discribe" v-for="(item, index) in dataSave.goodsDiscribe" :key="index">
-            {{ item }}
+            <span>{{ item }}</span>
           </div>
         </div>
         <div class="mgb-4 flex" style="font-size:14px;color:grey;">
@@ -57,6 +57,10 @@ console.log(a)
   min-height: 110px;
 
   &_Discribe {
+    height: 20px;
+    box-sizing: border-box;
+    line-height: 16px;
+    font-size:13px ;
     padding: 2px;
     background-color: rgba(234, 234, 234);
     margin-right: 10px;

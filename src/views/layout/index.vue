@@ -12,7 +12,7 @@
       <TabbarItem replace to="/home">
         <template #icon="props">
           <img id="home" :class="props.active ? 'icon-active' : 'icon-default'"
-            :src="props.active ? activeIcon.home : defaultIcon.home" alt="">
+            :src="props.active!=0 ? activeIcon.home : defaultIcon.home" alt="">
         </template>
         <span class="text">{{ toTop ? '回顶部' : '首页' }}</span>
       </TabbarItem>
@@ -67,34 +67,34 @@ export default {
       }
     };
   },
+  methods: {
+  },
   mounted() {
+    let home = document.getElementById('home')
+    const Viewheight = document.documentElement.clientHeight || document.body.clientHeight
     window.addEventListener("scroll", function () {
-      let home = document.getElementById('home')
       this.toTopIcon = require('@/assets/icons/tabbar/home-toTop.png')
       const homeIcon = require('@/assets/icons/tabbar/home-active.png')
-      const Viewheight = document.documentElement.clientHeight || document.body.clientHeight
       if (window.pageYOffset >= Viewheight) {
         this.toTop = true
         home.src = this.toTopIcon
-        home.onclick=function(){
+        home.onclick = function () {
           window.scroll(0, 0);
         }
-        console.log(home)
       } else {
-        home.onclick=null
+        home.onclick = null
         this.toTop = false
         home.src = homeIcon
       }
     });
   },
-  methods: {
-
-  }
 };
 </script>
 
 <style scoped lang="less">
-.layout-tabbar {}
+.layout-tabbar {
+  height: 62px
+}
 
 .icon-default {
   width: 28px;
@@ -107,6 +107,10 @@ export default {
 }
 
 .text {}
+
+:v-deep .van-tabbar-item__icon {
+  position: absolute;
+}
 
 ::v-deep .van-tabbar-item--active {
   color: black;
