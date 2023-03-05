@@ -21,6 +21,8 @@ module.exports = {
     'vue/no-v-model-argument': 'off',
     'vue/no-dupe-keys': 'off',
     // 禁用变量声明但未使用的提示
-    'vue/no-unused-vars':'off'
+    'vue/no-unused-vars':'off',
+    'vue/no-mutating-props':'off',
+    'vue/no-dupe-v-else-if':'off'
   }
 }

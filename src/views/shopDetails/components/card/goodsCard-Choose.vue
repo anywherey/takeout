@@ -1,18 +1,35 @@
 <template>
   <div>
-    <div @click.stop="addOrChoose" class="addButton-small" v-if="dataSave.specifications">选规格</div>
-    <div @click.stop="addOrChoose" class="addButton-small" v-else>{{ dataSave.xxx ? `'-'${dataSave.xxx}'+'` : '+' }}</div>
+    <div v-if="specifications == 1">
+      <div @click.stop="addOrChoose" class="addButton-small" v-if="chooseList.amount == 0">
+        选规格
+      </div>
+      <div v-else><span @click="toAddSub(-1)">-</span><span>{{
+        chooseList.amount }}</span><span @click="toAddSub(1)">+</span></div>
+    </div>
+    <div  v-else>
+      <div class="addButton-small" v-if="chooseList.amount > 0">
+        <span @click="toAddSub(-1)">-</span><span>{{ chooseList.amount }}</span><span @click="toAddSub(1)">+</span>
+      </div>
+      <div v-else class="addButton-small" @click="chooseList.amount+=1">
+        +
+      </div>
+    </div>
     <section>
       <div @click="showPopup = !showPopup" v-show="showPopup" class="cancel">X</div>
       <van-popup v-model="showPopup" @close="close" class="Popup pd16">
-        <div class="mgb-10">{{ foodName }}</div>
+        <div class="mgb-10" style="font-size: 20px;font-weight: 600;">{{ foodName }}</div>
         <section class="Popup_arrtibute">
           <div v-for="(item, index) in dataSave" :key="index">
             <div class="mgb-10">{{ index }}</div>
             <div class="mgb-10 flex">
-              <div class="Popup_default Popup_selected" v-for="(inItem, inIndex) in item" :key="inIndex">
-                <div class="Popup_selectedIn">{{ inItem.name }}</div>
-                <div v-if="inItem.price" class="Popup_selectedIn_right">￥<span>{{ inItem.price }}</span></div>
+              <div :class="inItem.isChoose ? 'Popup_default Popup_selected' : 'Popup_default'"
+                v-for="(inItem, inIndex) in item" :key="inIndex">
+                <div :class="{ 'Popup_selectedIn': inItem.isChoose }" @click="choose(item, inItem, inIndex)">{{
+                  inItem.name }}
+                </div>
+                <div v-if="inItem.price" :class="{ Popup_selectedIn_right: inItem.isChoose }">￥<span>{{ inItem.price
+                }}</span></div>
               </div>
             </div>
           </div>
@@ -29,14 +46,18 @@
                 style="font-size:18px;color:#f4534b;">¥</span><span style="font-size:18px;color:#f4534b;">1.9</span>
             </div>
           </div>
-          <section @click="buyButton">
-            <div class="addButton-medium">+ 加入购物车</div>
+          <section>
+            <div @click="buyButton" v-if="chooseList.amount == 0" class="addButton-medium">+ 加入购物车</div>
+            <div v-else>
+              <span @click="toAddSub(-1)">-</span> <span>{{ chooseList.amount }}</span> <span
+                @click="toAddSub(1)">+</span>
+            </div>
           </section>
         </div>
-        <div>
+        <!-- <div>
           <div>到手预估</div>
           <div><span>￥</span><span>23.8</span></div>
-        </div>
+        </div> -->
       </van-popup>
     </section>
   </div>
@@ -50,38 +71,60 @@ export default {
       type: String,
       default: '牛杂面'
     },
+    specifications: {
+      type: String,
+      default: '0'
+    },
     dataSave: {
       type: Object,
       default: function _default() {
         return {
           '加料': [{
+            firstId: 1,
             name: '原料',
-            price: 10
+            price: 10,
+            isChoose: false,
           }, {
+            firstId: 2,
             name: '+爆珠',
-            price: 10
+            price: 10,
+            isChoose: false,
           }, {
+            firstId: 3,
             name: '+仙草',
-            price: 10
+            price: 10,
+            isChoose: false,
           }, {
+            firstId: 4,
             name: '+黑钻',
-            price: 10
+            price: 10,
+            isChoose: false,
           }, {
+            firstId: 5,
             name: '+芋圆',
-            price: 10
+            price: 10,
+            isChoose: false,
           }],
           "温度": [{
+            secondId: 1,
             name: '冰',
-            price: undefined
+            price: undefined,
+            isChoose: false
           }, {
+            secondId: 2,
             name: '少冰',
-            price: undefined
+            price: undefined,
+            isChoose: false
           }, {
+            secondId: 3,
             name: '常温',
-            price: undefined
+            price: undefined,
+            isChoose: false
           }],
           "加大料": [{
+            thirdId: 1,
             name: '冬瓜',
+            isChoose: false
           }]
         }
       }
@@ -96,18 +139,70 @@ export default {
     return {
       showPopup: false,
       show: true,
+      chooseList: {
+        "foodList": [{
+
+        }],
+        "amount": 0
+      }
     };
   },
   methods: {
     addOrChoose() {
       this.showPopup = !this.showPopup
     },
+    choose(item, inItem, inIndex) {
+      item.map((all, index) => {
+        if (index != inIndex) {
+          all.isChoose = false
+        } else {
+          all.isChoose = true
+        }
+      })
+    },
+    toAddSub(num) {
+      this.chooseList.amount += num
+      this.$emit('getData', this.chooseList)
+    },
     buyButton() {
-      this.showPopup = !this.showPopup
-      this.$emit('getData', 'test')
+      let countType = 0;
+      const maxType = Object.keys(this.dataSave).length
+      let warnType = []
+      for (let i of Object.keys(this.dataSave)) {
+        let searchWarnType = 0
+        for (let j = 0; j < this.dataSave[i].length; j++) {
+          if (this.dataSave[i][j].isChoose == true) {
+            countType += 1
+            searchWarnType = 0
+            this.chooseList.foodList.push(this.dataSave[i][j])
+            break
+          } else {
+            searchWarnType == this.dataSave[i].length - 1 ?
+              (warnType.push(i), searchWarnType = 0)
+              : searchWarnType += 1
+          }
+        }
+      }
+
+      if (countType < maxType) {
+        let words = ''
+        warnType.map((item, index) => {
+          if (index < warnType.length - 1) {
+            words += item + '、'
+          } else {
+            words += item
+          }
+        })
+        alert(`请将${words}补齐`)
+      } else {
+        this.chooseList.amount = 1
+        this.$emit('getData', this.chooseList)
+      }
+      // this.showPopup = !this.showPopup
+
     },
     close() {
-      console.log("11")
+      console.log("X")
     }
   }
 };
@@ -118,7 +213,7 @@ export default {
 
 .Popup {
   width: 85%;
-  height: 300px;
+  min-height: 207px;
   border-radius: 2%;
   overflow: hidden;
 
@@ -158,4 +253,5 @@ export default {
   left: 50%;
   z-index: 2054;
   color: #f4534b;
-}</style>
+}
+</style>

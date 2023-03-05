@@ -18,7 +18,7 @@
             <span><span style="font-size:14px;color:#f4534b;">￥</span><span style="font-size:18px;color:#f4534b;">{{
               dataSave.goodsPrice }}</span><span style="color:grey;font-size:14px;">起</span></span>
           </div>
-          <goodsChoose @getData="getData"></goodsChoose>
+          <goodsChoose @getData="getData" :specifications="specifications" :foodName="foodName"></goodsChoose>
         </div>
       </van-col>
     </van-row>
@@ -32,6 +32,8 @@ export default {
   data() {
     return {
       PopupData: {},
+      specifications:'1',
+      foodName:'牛牛面',
       dataSave: {
         goodsName: "猪杂汤粉/面（可选）",
         goodsDiscribe: ["原味", "鲜"],
